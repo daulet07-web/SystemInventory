@@ -1,0 +1,2354 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Инвентаризация - Отбасы Банк</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #eee;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 210, 255, 0.15);
+            border: 1px solid #00d2ff;
+            color: #00d2ff;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .back-button:hover {
+            background: rgba(0, 210, 255, 0.3);
+            transform: translateX(-5px);
+        }
+
+        #listPage {
+            display: block;
+        }
+
+        #detailPage {
+            display: none;
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(0, 210, 255, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            background: rgba(15, 25, 45, 0.6);
+            border: none;
+            color: #aaa;
+            padding: 12px 24px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .tab-btn:hover {
+            background: rgba(0, 210, 255, 0.2);
+            color: #00d2ff;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #0f3460, #16213e);
+            color: #00d2ff;
+            border-bottom: 2px solid #00d2ff;
+        }
+
+        .table-container {
+            background: rgba(15, 25, 45, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        .data-table th {
+            background: #0a1628;
+            color: #00d2ff;
+            padding: 14px 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #00d2ff;
+        }
+
+        .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(0, 210, 255, 0.15);
+            color: #ddd;
+        }
+
+        .data-table tr {
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .data-table tr:hover {
+            background: rgba(0, 210, 255, 0.05);
+        }
+
+        .badge {
+            display: inline-block;
+            background: #00d2ff20;
+            color: #00d2ff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+
+        .badge-success {
+            background: rgba(0, 255, 100, 0.2);
+            color: #00ff66;
+        }
+
+        .badge-warning {
+            background: rgba(255, 200, 0, 0.2);
+            color: #ffcc00;
+        }
+
+        .badge-danger {
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+        }
+
+        .badge-department {
+            background: rgba(0, 210, 255, 0.2);
+            color: #00d2ff;
+        }
+
+        .detail-card {
+            background: rgba(15, 25, 45, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid #00d2ff;
+            overflow: hidden;
+        }
+
+        .detail-header {
+            background: linear-gradient(135deg, #0a1628, #0f1923);
+            padding: 25px;
+            border-bottom: 1px solid #00d2ff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .detail-header h2 {
+            color: #00d2ff;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .detail-header p {
+            color: #888;
+        }
+
+        .detail-body {
+            padding: 25px;
+        }
+
+        .detail-section {
+            margin-bottom: 30px;
+        }
+
+        .detail-section h3 {
+            color: #00d2ff;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(0, 210, 255, 0.3);
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 15px;
+        }
+
+        .detail-item {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 12px 15px;
+            border-left: 3px solid #00d2ff;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #00d2ff;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            color: #eee;
+            word-break: break-word;
+        }
+
+        .detail-desc {
+            font-size: 0.7rem;
+            color: #888;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .related-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .related-link {
+            background: rgba(0, 210, 255, 0.2);
+            border: 1px solid #00d2ff;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.85rem;
+            color: #00d2ff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .related-link:hover {
+            background: #00d2ff;
+            color: #1a1a2e;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #666;
+            border-top: 1px solid #222;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #listPage, #detailPage {
+            animation: fadeIn 0.3s ease;
+        }
+
+        .top-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+
+        .btn-add {
+            background: rgba(0, 210, 255, 0.15);
+            border: 1px solid #00d2ff;
+            color: #00d2ff;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-add:hover {
+            background: #00d2ff;
+            color: #1a1a2e;
+        }
+
+        .btn-edit, .btn-delete {
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-edit {
+            background: rgba(255, 150, 0, 0.15);
+            border: 1px solid #ff9600;
+            color: #ff9600;
+            margin-right: 8px;
+        }
+
+        .btn-edit:hover {
+            background: #ff9600;
+            color: #fff;
+        }
+
+        .btn-delete {
+            background: rgba(255, 0, 50, 0.15);
+            border: 1px solid #ff0032;
+            color: #ff0032;
+        }
+
+        .btn-delete:hover {
+            background: #ff0032;
+            color: #fff;
+        }
+
+        .btn-detail {
+            background: rgba(0, 210, 255, 0.15);
+            border: 1px solid #00d2ff;
+            color: #00d2ff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            margin-left: 8px;
+            cursor: pointer;
+        }
+
+        .btn-detail:hover {
+            background: #00d2ff;
+            color: #1a1a2e;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .modal-content {
+            background: #111a2e;
+            border: 1px solid #00d2ff;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 700px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(0, 210, 255, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            color: #00d2ff;
+            font-size: 1.3rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: #ff0032;
+        }
+
+        .modal-body {
+            padding: 15px 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        .form-group input, .form-group select {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            padding: 8px 12px;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: #00d2ff;
+            background: rgba(0, 210, 255, 0.05);
+        }
+
+        .modal-footer {
+            padding: 12px 20px;
+            border-top: 1px solid rgba(0, 210, 255, 0.2);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-cancel {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #555;
+            color: #ccc;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        .btn-submit {
+            background: rgba(0, 210, 255, 0.2);
+            border: 1px solid #00d2ff;
+            color: #00d2ff;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-submit:hover {
+            background: #00d2ff;
+            color: #1a1a2e;
+        }
+
+        .sub-table {
+            margin-top: 20px;
+            padding-top: 15px;
+        }
+
+        .sub-table h4 {
+            color: #00d2ff;
+            margin-bottom: 10px;
+            padding-left: 15px;
+        }
+
+        /* ===== ВЕРТИКАЛЬНАЯ СХЕМА ===== */
+        .diagram-container {
+            padding: 15px;
+        }
+
+        .diagram-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .diagram-controls .btn-sm {
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            background: rgba(0, 210, 255, 0.1);
+            color: #00d2ff;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .diagram-controls .btn-sm:hover {
+            background: #00d2ff;
+            color: #1a1a2e;
+        }
+
+        .diagram-controls .btn-danger-sm {
+            border-color: #ff4444;
+            color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+        }
+
+        .diagram-controls .btn-danger-sm:hover {
+            background: #ff4444;
+            color: #fff;
+        }
+
+        .dependency-wrapper {
+            background: rgba(10, 22, 40, 0.95);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            padding: 25px 20px;
+            min-height: 400px;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .dependency-wrapper .dep-title {
+            text-align: center;
+            color: #00d2ff;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(0, 210, 255, 0.3);
+            padding-bottom: 12px;
+        }
+
+        .dep-outer-container {
+            border: 2px solid rgba(0, 210, 255, 0.3);
+            border-radius: 16px;
+            padding: 20px 25px;
+            margin: 5px 0;
+            position: relative;
+            background: rgba(0, 210, 255, 0.03);
+        }
+
+        .dep-outer-container .outer-label {
+            position: absolute;
+            top: -11px;
+            left: 30px;
+            background: rgba(10, 22, 40, 0.95);
+            padding: 0 14px;
+            color: #00d2ff;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border-radius: 4px;
+        }
+
+        .dep-outer-container .outer-label .sub {
+            color: #666;
+            font-weight: 400;
+            font-size: 10px;
+            letter-spacing: 1px;
+        }
+
+        .dep-container-vertical {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 10px;
+            width: 100%;
+        }
+
+        .dep-row-vertical {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            width: 100%;
+            padding: 8px 0;
+        }
+
+        .dep-inner-group {
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 10px 15px;
+            background: rgba(0, 0, 0, 0.15);
+            position: relative;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .dep-inner-group .group-label {
+            position: absolute;
+            top: -8px;
+            left: 15px;
+            background: rgba(10, 22, 40, 0.9);
+            padding: 0 10px;
+            color: #555;
+            font-size: 9px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .dep-card-vertical {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            padding: 12px 18px;
+            min-width: 180px;
+            max-width: 280px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            flex: 0 1 auto;
+        }
+
+        .dep-card-vertical:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 30px rgba(0, 210, 255, 0.2);
+        }
+
+        .dep-card-vertical .card-icon {
+            font-size: 22px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .dep-card-vertical .card-name {
+            color: #fff;
+            font-weight: 600;
+            font-size: 13px;
+            display: block;
+        }
+
+        .dep-card-vertical .card-type {
+            font-size: 10px;
+            color: #888;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .dep-card-vertical .card-status {
+            display: inline-block;
+            font-size: 9px;
+            padding: 2px 12px;
+            border-radius: 12px;
+            margin-top: 4px;
+        }
+
+        .dep-card-vertical .card-status.running {
+            background: rgba(0, 255, 100, 0.2);
+            color: #00ff66;
+        }
+
+        .dep-card-vertical .card-status.stopped {
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+        }
+
+        .dep-card-vertical .card-status.degraded {
+            background: rgba(255, 200, 0, 0.2);
+            color: #ffcc00;
+        }
+
+        .dep-card-vertical .card-ip {
+            font-size: 9px;
+            color: #00d2ff;
+            margin-top: 3px;
+            font-weight: 500;
+        }
+
+        .dep-card-vertical .card-port {
+            font-size: 9px;
+            color: #888;
+            margin-top: 1px;
+        }
+
+        .dep-card-vertical .card-resources {
+            font-size: 8px;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .dep-card-vertical .card-tech {
+            font-size: 8px;
+            color: #555;
+            margin-top: 2px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 3px;
+        }
+
+        .dep-card-vertical.type-api {
+            border-color: rgba(0, 210, 255, 0.4);
+        }
+        .dep-card-vertical.type-api .card-name {
+            color: #00d2ff;
+        }
+
+        .dep-card-vertical.type-frontend {
+            border-color: rgba(255, 200, 0, 0.4);
+        }
+        .dep-card-vertical.type-frontend .card-name {
+            color: #ffcc00;
+        }
+
+        .dep-card-vertical.type-worker {
+            border-color: rgba(255, 100, 200, 0.4);
+        }
+        .dep-card-vertical.type-worker .card-name {
+            color: #ff64c8;
+        }
+
+        .dep-card-vertical.type-database {
+            border-color: rgba(0, 255, 100, 0.4);
+        }
+        .dep-card-vertical.type-database .card-name {
+            color: #00ff66;
+        }
+
+        .dep-card-vertical.type-cache {
+            border-color: rgba(255, 68, 68, 0.4);
+        }
+        .dep-card-vertical.type-cache .card-name {
+            color: #ff4444;
+        }
+
+        .dep-card-vertical.type-messagebroker {
+            border-color: rgba(200, 100, 255, 0.4);
+        }
+        .dep-card-vertical.type-messagebroker .card-name {
+            color: #c864ff;
+        }
+
+        .dep-arrow-vertical {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 4px 0;
+            width: 100%;
+        }
+
+        .dep-arrow-vertical .arrow-down {
+            width: 2px;
+            height: 40px;
+            background: linear-gradient(to bottom, #00d2ff, #3a7bd5);
+            position: relative;
+        }
+
+        .dep-arrow-vertical .arrow-down::after {
+            content: '▼';
+            position: absolute;
+            bottom: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #00d2ff;
+            font-size: 16px;
+        }
+
+        .dep-arrow-vertical .arrow-label {
+            color: #666;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 4px;
+        }
+
+        .dep-arrow-vertical .arrow-label .highlight {
+            color: #00d2ff;
+            font-weight: 700;
+        }
+
+        .dep-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 12px 0 5px 0;
+            font-size: 0.65rem;
+            justify-content: center;
+            border-top: 1px solid rgba(0, 210, 255, 0.15);
+            margin-top: 12px;
+        }
+
+        .dep-legend .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #888;
+        }
+
+        .dep-legend .legend-color {
+            width: 14px;
+            height: 4px;
+            border-radius: 2px;
+        }
+
+        .dep-legend .legend-color.color-api {
+            background: #00d2ff;
+        }
+        .dep-legend .legend-color.color-frontend {
+            background: #ffcc00;
+        }
+        .dep-legend .legend-color.color-worker {
+            background: #ff64c8;
+        }
+        .dep-legend .legend-color.color-database {
+            background: #00ff66;
+        }
+        .dep-legend .legend-color.color-cache {
+            background: #ff4444;
+        }
+        .dep-legend .legend-color.color-messagebroker {
+            background: #c864ff;
+        }
+
+        .dep-legend .legend-item .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .dep-legend .legend-item .status-dot.running {
+            background: #00ff66;
+        }
+        .dep-legend .legend-item .status-dot.stopped {
+            background: #ff4444;
+        }
+        .dep-legend .legend-item .status-dot.degraded {
+            background: #ffcc00;
+        }
+
+        .schema-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 10px 0 5px 0;
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .schema-stats span {
+            color: #00d2ff;
+            font-weight: 600;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(0, 210, 255, 0.9);
+            color: #1a1a2e;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            display: none;
+            z-index: 999;
+        }
+
+        .toast.show {
+            display: block;
+            animation: toastAnim 2.5s ease;
+        }
+
+        @keyframes toastAnim {
+            0% { opacity: 0; transform: translateY(20px); }
+            10% { opacity: 1; transform: translateY(0); }
+            90% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(20px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏗️ IT Инвентаризация - Отбасы Банк</h1>
+        <div class="subtitle">Полная система управления IT-инфраструктурой</div>
+
+        <div id="listPage">
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="devices">🖥️ Устройства</button>
+                <button class="tab-btn" data-tab="services">⚙️ Сервисы</button>
+                <button class="tab-btn" data-tab="clusters">🏢 Кластеры и Ноды</button>
+                <button class="tab-btn" data-tab="accesses">🔗 Доступы сервисов</button>
+                <button class="tab-btn" data-tab="diagram">🗺️ Схема сети</button>
+                <button class="tab-btn" data-tab="credentials">🔐 Учётные данные</button>
+                <button class="tab-btn" data-tab="networks">🌐 Сети</button>
+                <button class="tab-btn" data-tab="audit">📝 Аудит</button>
+                <button class="tab-btn" data-tab="departments">🏛️ Департаменты</button>
+            </div>
+
+            <div class="top-actions">
+                <button class="btn-add" onclick="openAddModal()">➕ Добавить запись</button>
+            </div>
+
+            <!-- Устройства -->
+            <div id="tab-devices" class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>ID</th><th>Имя устройства</th><th>Тип</th><th>Производитель</th><th>Модель</th><th>Статус</th><th>ОС</th><th>Департамент</th><th>Действия</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- Сервисы -->
+            <div id="tab-services" class="table-container" style="display: none;">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>ID</th><th>Название сервиса</th><th>Тип</th><th>Версия</th><th>Статус</th><th>Порт</th><th>Стек</th><th>Департамент</th><th>Действия</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- Кластеры и Ноды -->
+            <div id="tab-clusters" class="table-container" style="display: none;">
+                <div class="top-actions" style="justify-content: space-between;">
+                    <div>
+                        <button class="btn-add" onclick="openAddModalCluster()" style="margin-right: 10px;">+ Добавить кластер</button>
+                        <button class="btn-add" onclick="openAddModalNode()">+ Добавить ноду</button>
+                    </div>
+                </div>
+                <h3 style="padding: 15px 15px 0 15px; color: #00d2ff;">📦 Кластеры</h3>
+                <table class="data-table">
+                    <thead><tr><th>ID</th><th>Название</th><th>Тип</th><th>Окружение</th><th>Департамент</th><th>Описание</th><th>Действия</th></tr></thead>
+                    <tbody id="clustersList"></tbody>
+                </table>
+                <div class="sub-table"><h4>🖧 Ноды</h4>
+                <table class="data-table">
+                    <thead><tr><th>ID</th><th>Кластер</th><th>Имя</th><th>Внутренний IP</th><th>Внешний IP</th><th>Порт</th><th>Роль</th><th>Статус</th><th>CPU</th><th>RAM</th><th>Диск</th><th>Департамент</th><th>Действия</th></tr></thead>
+                    <tbody id="nodesList"></tbody>
+                </table></div>
+            </div>
+
+            <!-- Доступы сервисов -->
+            <div id="tab-accesses" class="table-container" style="display: none;">
+                <div class="top-actions"><button class="btn-add" onclick="openAddModalAccess()">+ Добавить доступ</button></div>
+                <table class="data-table">
+                    <thead><tr><th>ID</th><th>Сервис</th><th>Тип сервиса</th><th>Нода</th><th>IP адрес ноды</th><th>Тип доступа</th><th>Департамент</th><th>Действия</th></tr></thead>
+                    <tbody id="accessesList"></tbody>
+                </table>
+            </div>
+
+            <!-- ===== СХЕМА СЕТИ (ВЕРТИКАЛЬНАЯ СХЕМА ЗАВИСИМОСТЕЙ) ===== -->
+            <div id="tab-diagram" class="table-container" style="display: none;">
+                <div class="diagram-container">
+                    <div class="diagram-controls">
+                        <button class="btn-sm" onclick="diagramAddService()">➕ Добавить сервис</button>
+                        <button class="btn-sm" onclick="diagramAddDependency()">🔗 Добавить зависимость</button>
+                        <button class="btn-sm" onclick="diagramSync()">🔄 Синхронизировать</button>
+                    </div>
+
+                    <div class="dependency-wrapper">
+                        <div class="dep-title">🔗 СХЕМА ЗАВИСИМОСТЕЙ СЕРВИСОВ</div>
+                        <div id="depContainer" class="dep-container-vertical"></div>
+
+                        <div class="dep-legend">
+                            <div class="legend-item"><div class="legend-color color-api"></div> API</div>
+                            <div class="legend-item"><div class="legend-color color-frontend"></div> Frontend</div>
+                            <div class="legend-item"><div class="legend-color color-worker"></div> Worker</div>
+                            <div class="legend-item"><div class="legend-color color-database"></div> БД</div>
+                            <div class="legend-item"><div class="legend-color color-cache"></div> Кэш</div>
+                            <div class="legend-item"><div class="legend-color color-messagebroker"></div> Брокер</div>
+                            <div class="legend-item"><span style="color:#666;margin-left:8px;">|</span></div>
+                            <div class="legend-item"><span class="status-dot running"></span> Running</div>
+                            <div class="legend-item"><span class="status-dot stopped"></span> Stopped</div>
+                            <div class="legend-item"><span class="status-dot degraded"></span> Degraded</div>
+                            <div class="legend-item" style="color:#666;margin-left:8px;">(клик по карточке для деталей)</div>
+                        </div>
+                    </div>
+
+                    <div class="schema-stats">
+                        <div>Сервисов: <span id="depServiceCount">0</span></div>
+                        <div>Связей: <span id="depEdgeCount">0</span></div>
+                        <div>Уровней: <span id="depLevelCount">0</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Учётные данные -->
+            <div id="tab-credentials" class="table-container" style="display: none;">
+                <table class="data-table">
+                    <thead><tr><th>ID</th><th>Пользователь</th><th>Протокол</th><th>Уровень</th><th>Привязан к</th><th>Истекает</th><th>Департамент</th><th>Действия</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- Сети -->
+            <div id="tab-networks" class="table-container" style="display: none;">
+                <table class="data-table">
+                    <thead><tr><th>ID</th><th>Название сети</th><th>Подсеть</th><th>VLAN ID</th><th>Устройства</th><th>Департамент</th><th>Действия</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- Аудит -->
+            <div id="tab-audit" class="table-container" style="display: none;">
+                <table class="data-table">
+                    <thead><tr><th>ID</th><th>Актив</th><th>Действие</th><th>Поле</th><th>Старое</th><th>Новое</th><th>Кто</th><th>Дата</th></tr></thead>
+                    <tbody id="auditList"></tbody>
+                </table>
+            </div>
+
+            <!-- Департаменты -->
+            <div id="tab-departments" class="table-container" style="display: none;">
+                <div class="top-actions"><button class="btn-add" onclick="openAddModalDepartment()">+ Добавить департамент</button></div>
+                <table class="data-table">
+                    <thead><tr><th>ID</th><th>Название департамента</th><th>Тип</th><th>Руководитель</th><th>Email</th><th>Телефон</th><th>Описание</th><th>Действия</th></tr></thead>
+                    <tbody id="departmentsList"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="detailPage">
+            <div class="back-button" onclick="goBack()">← Вернуться к списку</div>
+            <div id="detailContent" class="detail-card"></div>
+        </div>
+
+        <div class="footer">
+            <p>IT Инвентаризация | Управление устройствами, сервисами, кластерами, доступами, департаментами</p>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Добавить запись</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="crudForm" onsubmit="handleFormSubmit(event)">
+                <div class="modal-body">
+                    <div class="form-grid" id="formFieldsContainer"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Отмена</button>
+                    <button type="submit" class="btn-submit">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ============ ВСЕ ДАННЫЕ ============
+        const fieldDescriptions = {
+            name: 'Уникальное сетевое имя устройства в инфраструктуре',
+            type: 'Тип оборудования: Сервер, Коммутатор, Firewall, Bastion, СХД',
+            manufacturer: 'Компания-производитель оборудования (Dell, HPE, Cisco, Fortinet)',
+            model: 'Конкретная модель устройства',
+            status: 'Текущее состояние: Активен, Резерв, Обслуживание, Списан',
+            os: 'Операционная система (Ubuntu, Windows Server, IOS-XE, FortiOS)',
+            internalIp: 'IP адрес внутри корпоративной сети (RFC 1918)',
+            externalIp: 'Публичный IP адрес для доступа из интернета',
+            cpu: 'Процессор: модель и количество ядер',
+            ram: 'Объём оперативной памяти',
+            departmentId: 'Департамент, отвечающий за обслуживание устройства',
+            description: 'Назначение устройства и его роль в инфраструктуре',
+            serviceName: 'Уникальное имя сервиса в системе',
+            serviceType: 'Тип сервиса: API, Worker, Frontend, Database, Cache, MessageBroker',
+            version: 'Текущая версия сервиса',
+            serviceStatus: 'Состояние сервиса: Running, Stopped, Degraded, Failed',
+            port: 'Сетевой порт, на котором работает сервис',
+            techStack: 'Технологический стек, используемый в сервисе',
+            serviceDescription: 'Назначение сервиса и его роль в системе',
+            clusterName: 'Уникальное имя кластера в инфраструктуре',
+            clusterType: 'Тип кластера: PostgreSQL, Redis, Kafka, RabbitMQ, MongoDB, Elasticsearch',
+            environment: 'Окружение: Production, Staging, Development, Test',
+            clusterDescription: 'Назначение кластера и его роль в инфраструктуре',
+            nodeName: 'Уникальное имя ноды в кластере',
+            nodePort: 'Сетевой порт для подключения к ноде',
+            role: 'Роль ноды в кластере: leader, replica, master, controller, broker',
+            nodeStatus: 'Состояние ноды: online, offline, syncing, recovering, maintenance',
+            cpuCores: 'Количество ядер процессора на ноде',
+            ramGb: 'Объём оперативной памяти в гигабайтах',
+            diskGb: 'Объём дискового пространства в гигабайтах',
+            accessType: 'Тип доступа: read (чтение), write (запись), read_write (чтение и запись), admin (полный доступ)',
+            department: 'Департамент, ответственный за данную связь',
+            user: 'Имя пользователя для аутентификации',
+            protocol: 'Протокол доступа: SSH, RDP, HTTPS, PostgreSQL, Redis, SNMP',
+            level: 'Уровень доступа: User, Admin, Root, ReadOnly',
+            asset: 'Актив, к которому привязаны учётные данные',
+            expires: 'Дата истечения срока действия учётных данных',
+            networkName: 'Уникальное имя сети в инфраструктуре',
+            subnet: 'Сеть в формате CIDR (например, 10.0.0.0/24)',
+            vlan: 'Идентификатор VLAN для сегментации сети',
+            devices: 'Список устройств, подключённых к данной сети',
+            departmentName: 'Уникальное название департамента',
+            departmentType: 'Тип департамента: Технический, Безопасность, Разработка, Бизнес',
+            head: 'ФИО руководителя департамента',
+            email: 'Корпоративный email департамента',
+            phone: 'Контактный телефон департамента',
+            departmentDescription: 'Основные функции и задачи департамента',
+            action: 'Тип действия: Create (создание), Update (изменение), Delete (удаление)',
+            field: 'Поле, которое было изменено',
+            oldValue: 'Предыдущее значение поля до изменения',
+            newValue: 'Новое значение поля после изменения',
+            date: 'Дата и время выполнения действия'
+        };
+
+        let departments = {
+            1: { id: 1, name: 'IT инфраструктура', type: 'Технический', head: 'Иванов И.А.', email: 'it.infrastructure@otbasy.kz', phone: '+7 777 101-01-01', description: 'Управление серверами, сетями и ЦОД' },
+            2: { id: 2, name: 'Управление данными', type: 'Технический', head: 'Петров С.В.', email: 'data.management@otbasy.kz', phone: '+7 777 101-01-02', description: 'Управление базами данных и хранилищами' },
+            3: { id: 3, name: 'Сетевая инфраструктура', type: 'Технический', head: 'Сидоров А.Н.', email: 'network@otbasy.kz', phone: '+7 777 101-01-03', description: 'Управление сетями и коммуникациями' },
+            4: { id: 4, name: 'Информационная безопасность', type: 'Безопасность', head: 'Кузнецов Д.В.', email: 'security@otbasy.kz', phone: '+7 777 101-01-04', description: 'Обеспечение информационной безопасности' },
+            5: { id: 5, name: 'Разработка', type: 'Разработка', head: 'Соколов А.А.', email: 'dev@otbasy.kz', phone: '+7 777 101-01-05', description: 'Разработка и поддержка приложений' },
+            6: { id: 6, name: 'Платежи', type: 'Бизнес', head: 'Козлова Е.М.', email: 'payments@otbasy.kz', phone: '+7 777 101-01-06', description: 'Платежные системы и переводы' },
+            7: { id: 7, name: 'Интеграция', type: 'Технический', head: 'Морозов И.П.', email: 'integration@otbasy.kz', phone: '+7 777 101-01-07', description: 'Интеграция между системами' }
+        };
+
+        const deviceServices = { 1: [1, 3], 2: [4], 3: [], 4: [], 5: [5], 6: [] };
+        const serviceDevices = { 1: [1], 2: [], 3: [1], 4: [2], 5: [5] };
+        const serviceDependencies = { 1: [4, 5], 2: [4, 6], 3: [1], 4: [], 5: [], 6: [] };
+        const deviceNetwork = { 1: 1, 2: 1, 3: 2, 4: 2, 5: 4, 6: null };
+
+        let devices = {
+            1: { id: 1, name: 'WEB-SRV-01', type: 'Сервер', manufacturer: 'Dell', model: 'PowerEdge R750', status: 'Активен', os: 'Ubuntu 22.04', internalIp: '10.0.0.10', externalIp: '84.54.10.100', cpu: 'Intel Xeon Gold 6248', ram: '128 GB', departmentId: 1, description: 'Веб-сервер для хостинга внутренних и внешних приложений' },
+            2: { id: 2, name: 'DB-SRV-01', type: 'Сервер', manufacturer: 'HPE', model: 'DL380 Gen10', status: 'Активен', os: 'Windows Server 2022', internalIp: '10.0.0.20', externalIp: '84.54.10.101', cpu: 'Intel Xeon Silver 4214', ram: '256 GB', departmentId: 2, description: 'Основной сервер баз данных PostgreSQL' },
+            3: { id: 3, name: 'SW-CORE-01', type: 'Коммутатор', manufacturer: 'Cisco', model: 'Catalyst 9300', status: 'Активен', os: 'IOS-XE', internalIp: '10.0.1.10', externalIp: null, cpu: '8 ядер', ram: '16 GB', departmentId: 3, description: 'Ядровой коммутатор для всей корпоративной сети' },
+            4: { id: 4, name: 'FW-EDGE-01', type: 'Firewall', manufacturer: 'Fortinet', model: 'FortiGate 200F', status: 'Активен', os: 'FortiOS', internalIp: '10.0.1.1', externalIp: '84.54.10.1', cpu: '4 ядра', ram: '8 GB', departmentId: 4, description: 'Периметральный межсетевой экран' },
+            5: { id: 5, name: 'CACHE-01', type: 'Сервер', manufacturer: 'Dell', model: 'PowerEdge R650', status: 'Активен', os: 'Ubuntu 22.04', internalIp: '10.0.3.10', externalIp: null, cpu: 'Intel Xeon Silver 4310', ram: '64 GB', departmentId: 1, description: 'Сервер кэширования Redis' },
+            6: { id: 6, name: 'BASTION-01', type: 'Bastion', manufacturer: 'Dell', model: 'OptiPlex 7090', status: 'Активен', os: 'Ubuntu 22.04', internalIp: '10.0.99.10', externalIp: '84.54.10.200', cpu: 'Intel Core i7', ram: '32 GB', departmentId: 4, description: 'Bastion-хост для защищённого доступа' }
+        };
+
+        let services = {
+            1: { id: 1, name: 'Auth API', type: 'API', version: '2.1.0', status: 'Running', port: '8080', techStack: '.NET 8', description: 'Аутентификация и авторизация пользователей', departmentId: 5 },
+            2: { id: 2, name: 'Payment Worker', type: 'Worker', version: '1.5.2', status: 'Running', port: '—', techStack: 'Python 3.11', description: 'Обработка платежей в фоне', departmentId: 6 },
+            3: { id: 3, name: 'Frontend Portal', type: 'Frontend', version: '3.0.1', status: 'Running', port: '443', techStack: 'React + Nginx', description: 'Веб-портал для пользователей', departmentId: 5 },
+            4: { id: 4, name: 'PostgreSQL', type: 'Database', version: '15.4', status: 'Running', port: '5432', techStack: 'PostgreSQL', description: 'Основная база данных', departmentId: 2 },
+            5: { id: 5, name: 'Redis Cache', type: 'Cache', version: '7.2', status: 'Running', port: '6379', techStack: 'Redis', description: 'Кэширование данных и сессий', departmentId: 1 },
+            6: { id: 6, name: 'RabbitMQ', type: 'MessageBroker', version: '3.12.0', status: 'Running', port: '5672', techStack: 'RabbitMQ', description: 'Брокер сообщений для очередей', departmentId: 7 }
+        };
+
+        let credentials = {
+            1: { id: 1, user: 'root', protocol: 'SSH', level: 'Admin', asset: 'WEB-SRV-01', expires: '2025-12-31', departmentId: 1 },
+            2: { id: 2, user: 'postgres', protocol: 'PostgreSQL', level: 'Admin', asset: 'DB-SRV-01', expires: '2025-10-15', departmentId: 2 },
+            3: { id: 3, user: 'admin', protocol: 'HTTPS', level: 'Admin', asset: 'Frontend Portal', expires: '2026-01-20', departmentId: 5 },
+            4: { id: 4, user: 'redis_admin', protocol: 'Redis', level: 'Admin', asset: 'CACHE-01', expires: '2025-11-30', departmentId: 1 }
+        };
+
+        let networks = {
+            1: { id: 1, name: 'Production', subnet: '10.0.0.0/24', vlan: '100', devices: 'WEB-SRV-01, DB-SRV-01', departmentId: 1 },
+            2: { id: 2, name: 'Management', subnet: '10.0.1.0/24', vlan: '200', devices: 'SW-CORE-01, FW-EDGE-01', departmentId: 3 },
+            3: { id: 3, name: 'Storage', subnet: '10.0.2.0/24', vlan: '300', devices: 'DB-SRV-01', departmentId: 2 },
+            4: { id: 4, name: 'Cache', subnet: '10.0.3.0/24', vlan: '400', devices: 'CACHE-01', departmentId: 1 }
+        };
+
+        let clusters = {
+            1: { id: 1, name: 'PostgreSQL Cluster', type: 'PostgreSQL', environment: 'Production', departmentId: 2, description: 'Основной кластер БД для банковских операций' },
+            2: { id: 2, name: 'Redis Cache Cluster', type: 'Redis', environment: 'Production', departmentId: 1, description: 'Кластер кэширования' },
+            3: { id: 3, name: 'RabbitMQ Cluster', type: 'RabbitMQ', environment: 'Production', departmentId: 7, description: 'Очереди сообщений' }
+        };
+
+        let nodes = {
+            1: { id: 1, clusterId: 1, name: 'pg-01', internalIp: '10.0.0.10', externalIp: '84.54.10.1', port: 5432, role: 'leader', status: 'online', cpuCores: 8, ramGb: 32, diskGb: 500, departmentId: 2 },
+            2: { id: 2, clusterId: 1, name: 'pg-02', internalIp: '10.0.0.11', externalIp: '84.54.10.2', port: 5432, role: 'replica', status: 'online', cpuCores: 8, ramGb: 32, diskGb: 500, departmentId: 2 },
+            3: { id: 3, clusterId: 2, name: 'redis-01', internalIp: '10.0.3.10', externalIp: '84.54.10.10', port: 6379, role: 'master', status: 'online', cpuCores: 4, ramGb: 16, diskGb: 100, departmentId: 1 },
+            4: { id: 4, clusterId: 3, name: 'rabbit-01', internalIp: '10.0.5.10', externalIp: '84.54.10.20', port: 5672, role: 'leader', status: 'online', cpuCores: 6, ramGb: 24, diskGb: 200, departmentId: 7 }
+        };
+
+        let serviceAccesses = {
+            1: { id: 1, serviceId: 1, nodeId: 1, accessType: 'read_write', departmentId: 5 },
+            2: { id: 2, serviceId: 1, nodeId: 3, accessType: 'read_write', departmentId: 5 },
+            3: { id: 3, serviceId: 4, nodeId: 1, accessType: 'read_write', departmentId: 2 },
+            4: { id: 4, serviceId: 5, nodeId: 3, accessType: 'read_write', departmentId: 1 },
+            5: { id: 5, serviceId: 2, nodeId: 4, accessType: 'write', departmentId: 6 }
+        };
+
+        let audits = {};
+
+        function addAudit(asset, action, field, oldValue, newValue, user) {
+            const newId = Object.keys(audits).length > 0 ? Math.max(...Object.keys(audits).map(Number)) + 1 : 1;
+            audits[newId] = {
+                id: newId,
+                asset: asset || '—',
+                action: action || '—',
+                field: field || '—',
+                oldValue: oldValue || '—',
+                newValue: newValue || '—',
+                user: user || 'System',
+                date: new Date().toISOString().slice(0, 10)
+            };
+        }
+
+        function getDepartmentName(id) {
+            return departments[id] ? departments[id].name : '—';
+        }
+
+        function getDescription(key) {
+            return fieldDescriptions[key] || '';
+        }
+
+        const schema = {
+            devices: {
+                name: 'устройство',
+                store: devices,
+                fields: [
+                    { key: 'name', label: 'Имя устройства', descKey: 'name' },
+                    { key: 'type', label: 'Тип', descKey: 'type' },
+                    { key: 'manufacturer', label: 'Производитель', descKey: 'manufacturer' },
+                    { key: 'model', label: 'Модель', descKey: 'model' },
+                    { key: 'status', label: 'Статус', descKey: 'status' },
+                    { key: 'os', label: 'ОС', descKey: 'os' },
+                    { key: 'internalIp', label: 'Внутренний IP', descKey: 'internalIp' },
+                    { key: 'externalIp', label: 'Внешний IP', descKey: 'externalIp' },
+                    { key: 'cpu', label: 'CPU', descKey: 'cpu' },
+                    { key: 'ram', label: 'RAM', descKey: 'ram' },
+                    { key: 'departmentId', label: 'Ответственный департамент', descKey: 'departmentId' },
+                    { key: 'description', label: 'Описание', descKey: 'description' }
+                ]
+            },
+            services: {
+                name: 'сервис',
+                store: services,
+                fields: [
+                    { key: 'name', label: 'Название сервиса', descKey: 'serviceName' },
+                    { key: 'type', label: 'Тип', descKey: 'serviceType' },
+                    { key: 'version', label: 'Версия', descKey: 'version' },
+                    { key: 'status', label: 'Статус', descKey: 'serviceStatus' },
+                    { key: 'port', label: 'Порт', descKey: 'port' },
+                    { key: 'techStack', label: 'Стек технологий', descKey: 'techStack' },
+                    { key: 'description', label: 'Описание', descKey: 'serviceDescription' },
+                    { key: 'departmentId', label: 'Департамент', descKey: 'department' }
+                ]
+            },
+            credentials: {
+                name: 'учётные данные',
+                store: credentials,
+                fields: [
+                    { key: 'user', label: 'Пользователь', descKey: 'user' },
+                    { key: 'protocol', label: 'Протокол', descKey: 'protocol' },
+                    { key: 'level', label: 'Уровень доступа', descKey: 'level' },
+                    { key: 'asset', label: 'Привязан к активу', descKey: 'asset' },
+                    { key: 'expires', label: 'Дата истечения', descKey: 'expires' },
+                    { key: 'departmentId', label: 'Департамент', descKey: 'department' }
+                ]
+            },
+            networks: {
+                name: 'сеть',
+                store: networks,
+                fields: [
+                    { key: 'name', label: 'Название сети', descKey: 'networkName' },
+                    { key: 'subnet', label: 'Подсеть', descKey: 'subnet' },
+                    { key: 'vlan', label: 'VLAN ID', descKey: 'vlan' },
+                    { key: 'devices', label: 'Устройства', descKey: 'devices' },
+                    { key: 'departmentId', label: 'Департамент', descKey: 'department' }
+                ]
+            },
+            departments: {
+                name: 'департамент',
+                store: departments,
+                fields: [
+                    { key: 'name', label: 'Название департамента', descKey: 'departmentName' },
+                    { key: 'type', label: 'Тип', descKey: 'departmentType' },
+                    { key: 'head', label: 'Руководитель', descKey: 'head' },
+                    { key: 'email', label: 'Email', descKey: 'email' },
+                    { key: 'phone', label: 'Телефон', descKey: 'phone' },
+                    { key: 'description', label: 'Описание', descKey: 'departmentDescription' }
+                ]
+            }
+        };
+
+        let currentEditType = null;
+        let currentEditId = null;
+        let currentModalCallback = null;
+        let currentTab = 'devices';
+        const containers = { devices: document.getElementById('tab-devices'), services: document.getElementById('tab-services'), clusters: document.getElementById('tab-clusters'), accesses: document.getElementById('tab-accesses'), diagram: document.getElementById('tab-diagram'), credentials: document.getElementById('tab-credentials'), networks: document.getElementById('tab-networks'), audit: document.getElementById('tab-audit'), departments: document.getElementById('tab-departments') };
+
+        function getNextId(store) { return Math.max(...Object.keys(store).map(Number), 0) + 1; }
+
+        function renderDevices() {
+            const tbody = document.querySelector('#tab-devices tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            Object.values(devices).forEach(d => {
+                tbody.innerHTML += `<tr data-id="${d.id}" data-type="device" onclick="navigateToDetail('device', ${d.id})">
+                    <td>${d.id}</td><td>${d.name}</td><td>${d.type}</td>
+                    <td>${d.manufacturer}</td><td>${d.model}</td>
+                    <td><span class="badge">${d.status}</span></td><td>${d.os}</td>
+                    <td><span class="badge-department">${getDepartmentName(d.departmentId)}</span></td>
+                    <td><button class="btn-edit" onclick="event.stopPropagation(); openEditFlow('devices', ${d.id})">✏️</button>
+                        <button class="btn-delete" onclick="event.stopPropagation(); deleteItem('devices', ${d.id})">🗑️</button></td>
+                </tr>`;
+            });
+        }
+
+        function renderServices() {
+            const tbody = document.querySelector('#tab-services tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            Object.values(services).forEach(s => {
+                tbody.innerHTML += `<tr data-id="${s.id}" data-type="service" onclick="navigateToDetail('service', ${s.id})">
+                    <td>${s.id}</td><td>${s.name}</td><td>${s.type}</td>
+                    <td>${s.version}</td><td><span class="badge-success">${s.status}</span></td>
+                    <td>${s.port}</td><td>${s.techStack}</td>
+                    <td><span class="badge-department">${getDepartmentName(s.departmentId)}</span></td>
+                    <td><button class="btn-edit" onclick="event.stopPropagation(); openEditFlow('services', ${s.id})">✏️</button>
+                        <button class="btn-delete" onclick="event.stopPropagation(); deleteItem('services', ${s.id})">🗑️</button></td>
+                </tr>`;
+            });
+        }
+
+        function renderClusters() {
+            const tbody = document.getElementById('clustersList');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            Object.values(clusters).forEach(c => {
+                tbody.innerHTML += `<tr data-id="${c.id}" data-type="cluster" onclick="navigateToDetail('cluster', ${c.id})">
+                    <td>${c.id}</td><td>${c.name}</td><td>${c.type}</td>
+                    <td>${c.environment}</td><td><span class="badge-department">${getDepartmentName(c.departmentId)}</span></td>
+                    <td>${c.description}</td>
+                    <td><button class="btn-edit" onclick="event.stopPropagation(); openEditModalCluster(${c.id})">✏️</button>
+                        <button class="btn-delete" onclick="event.stopPropagation(); deleteCluster(${c.id})">🗑️</button></td>
+                </tr>`;
+            });
+        }
+
+        function renderNodes() {
+            const tbody = document.getElementById('nodesList');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            Object.values(nodes).forEach(n => {
+                const cluster = clusters[n.clusterId];
+                const statusClass = n.status === 'online' ? 'badge-success' : (n.status === 'offline' ? 'badge-danger' : 'badge-warning');
+                tbody.innerHTML += `<tr data-id="${n.id}" data-type="node" onclick="navigateToDetail('node', ${n.id})">
+                    <td>${n.id}</td>
+                    <td>${cluster ? `<span class="related-link" onclick="event.stopPropagation(); navigateToDetail('cluster', ${cluster.id})">🏢 ${cluster.name}</span>` : '—'}</td>
+                    <td>${n.name}</td>
+                    <td>${n.internalIp}</td>
+                    <td>${n.externalIp || '—'}</td>
+                    <td>${n.port}</td>
+                    <td>${n.role}</td>
+                    <td><span class="${statusClass}">${n.status}</span></td>
+                    <td>${n.cpuCores}</td>
+                    <td>${n.ramGb}</td>
+                    <td>${n.diskGb}</td>
+                    <td><span class="badge-department">${getDepartmentName(n.departmentId)}</span></td>
+                    <td><button class="btn-edit" onclick="event.stopPropagation(); openEditModalNode(${n.id})">✏️</button>
+                        <button class="btn-delete" onclick="event.stopPropagation(); deleteNode(${n.id})">🗑️</button></td>
+                </tr>`;
+            });
+        }
+
+        function renderAccesses() {
+            const tbody = document.getElementById('accessesList');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            Object.values(serviceAccesses).forEach(a => {
+                const service = services[a.serviceId];
+                const node = nodes[a.nodeId];
+                tbody.innerHTML += `<tr data-id="${a.id}" data-type="access" onclick="navigateToDetail('access', ${a.id})">
+                    <td>${a.id}</td><td>${service ? service.name : '—'}</td><td>${service ? service.type : '—'}</td>
+                    <td>${node ? node.name : '—'}</td><td>${node ? node.internalIp : '—'}</td>
+                    <td><span class="badge">${a.accessType}</span></td>
+                    <td><span class="badge-department">${getDepartmentName(a.departmentId)}</span></td>
+                    <td><button class="btn-edit" onclick="event.stopPropagation(); openEditModalAccess(${a.id})">✏️</button>
+                        <button class="btn-delete" onclick="event.stopPropagation(); deleteAccess(${a.id})">🗑️</button></td>
+                </tr>`;
+            });
+        }
+
+        function renderCredentials() {
+            const tbody = document.querySelector('#tab-credentials tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            Object.values(credentials).forEach(c => {
+                tbody.innerHTML += `<tr data-id="${c.id}" data-type="credential" onclick="navigateToDetail('credential', ${c.id})">
+                    <td>${c.id}</td><td>${c.user}</td><td>${c.protocol}</td>
+                    <td>${c.level}</td><td>${c.asset}</td>
+                    <td>${c.expires}</td>
+                    <td><span class="badge-department">${getDepartmentName(c.departmentId)}</span></td>
+                    <td><button class="btn-edit" onclick="event.stopPropagation(); openEditFlow('credentials', ${c.id})">✏️</button>
+                        <button class="btn-delete" onclick="event.stopPropagation(); deleteItem('credentials', ${c.id})">🗑️</button></td>
+                </tr>`;
+            });
+        }
+
+        function renderNetworks() {
+            const tbody = document.querySelector('#tab-networks tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            Object.values(networks).forEach(n => {
+                tbody.innerHTML += `<tr data-id="${n.id}" data-type="network" onclick="navigateToDetail('network', ${n.id})">
+                    <td>${n.id}</td><td>${n.name}</td>
+                    <td>${n.subnet}</td>
+                    <td>${n.vlan}</td>
+                    <td>${n.devices}</td>
+                    <td><span class="badge-department">${getDepartmentName(n.departmentId)}</span></td>
+                    <td><button class="btn-edit" onclick="event.stopPropagation(); openEditFlow('networks', ${n.id})">✏️</button>
+                        <button class="btn-delete" onclick="event.stopPropagation(); deleteItem('networks', ${n.id})">🗑️</button></td>
+                </tr>`;
+            });
+        }
+
+        function renderAudit() {
+            const tbody = document.getElementById('auditList');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            if (Object.keys(audits).length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8">Нет записей аудита</td></tr>';
+                return;
+            }
+            Object.values(audits).forEach(a => {
+                tbody.innerHTML += `<tr data-id="${a.id}" data-type="audit" onclick="navigateToDetail('audit', ${a.id})">
+                    <td>${a.id}</td><td>${a.asset}</td><td>${a.action}</td><td>${a.field}</td>
+                    <td>${a.oldValue}</td><td>${a.newValue}</td><td>${a.user}</td><td>${a.date}</td>
+                </tr>`;
+            });
+        }
+
+        function renderDepartments() {
+            const tbody = document.getElementById('departmentsList');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            Object.values(departments).forEach(d => {
+                tbody.innerHTML += `<tr data-id="${d.id}" data-type="department" onclick="navigateToDetail('department', ${d.id})">
+                    <td>${d.id}</td><td><span class="badge-department">${d.name}</span></td>
+                    <td>${d.type}</td><td>${d.head}</td>
+                    <td>${d.email}</td>
+                    <td>${d.phone}</td>
+                    <td>${d.description}</td>
+                    <td><button class="btn-edit" onclick="event.stopPropagation(); openEditModalDepartment(${d.id})">✏️</button>
+                        <button class="btn-delete" onclick="event.stopPropagation(); deleteDepartment(${d.id})">🗑️</button></td>
+                </tr>`;
+            });
+        }
+
+        function refreshAll() {
+            renderDevices();
+            renderServices();
+            renderClusters();
+            renderNodes();
+            renderAccesses();
+            renderCredentials();
+            renderNetworks();
+            renderAudit();
+            renderDepartments();
+            updateDependencyDiagram();
+        }
+
+        function getStore(type) {
+            const stores = { devices, services, credentials, networks };
+            return stores[type];
+        }
+
+        function buildSelectOptions(options, selectedId) {
+            let html = '';
+            for (const id in options) {
+                const selected = selectedId == id ? 'selected' : '';
+                html += `<option value="${id}" ${selected}>${options[id].name}</option>`;
+            }
+            return html;
+        }
+
+        function openAddModal() {
+            const currentSchema = schema[currentTab];
+            if (!currentSchema) return;
+            currentEditType = currentTab;
+            currentEditId = null;
+            document.getElementById('modalTitle').innerText = `➕ Добавить ${currentSchema.name}`;
+            const fieldsContainer = document.getElementById('formFieldsContainer');
+            fieldsContainer.innerHTML = '';
+            currentSchema.fields.forEach(field => {
+                if (field.key.includes('departmentId')) {
+                    fieldsContainer.innerHTML += `<div class="form-group"><label>${field.label}</label><select id="field_${field.key}">${buildSelectOptions(departments, '')}</select></div>`;
+                } else {
+                    fieldsContainer.innerHTML += `<div class="form-group"><label>${field.label}</label><input type="text" id="field_${field.key}" required></div>`;
+                }
+            });
+            currentModalCallback = () => {
+                const store = getStore(currentTab);
+                const newId = getNextId(store);
+                const newItem = { id: newId };
+                currentSchema.fields.forEach(field => {
+                    const val = document.getElementById(`field_${field.key}`).value;
+                    newItem[field.key] = field.key.includes('departmentId') ? parseInt(val) : val;
+                });
+                const typeName = currentTab === 'devices' ? 'Устройство' : currentTab === 'services' ? 'Сервис' : 'Запись';
+                const name = newItem.name || newItem.user || 'Без названия';
+                addAudit(name, 'Create', 'Все поля', '—', 'Создано', 'System');
+                store[newId] = newItem;
+                refreshAll();
+            };
+            document.getElementById('modalOverlay').style.display = 'flex';
+        }
+
+        function openEditFlow(tabKey, id) {
+            const currentSchema = schema[tabKey];
+            if (!currentSchema) return;
+            const store = getStore(tabKey);
+            const item = store[id];
+            if (!item) return;
+            currentEditType = tabKey;
+            currentEditId = id;
+            document.getElementById('modalTitle').innerText = `✏️ Редактировать ${currentSchema.name}`;
+            const fieldsContainer = document.getElementById('formFieldsContainer');
+            fieldsContainer.innerHTML = '';
+            currentSchema.fields.forEach(field => {
+                const value = item[field.key] || '';
+                if (field.key.includes('departmentId')) {
+                    fieldsContainer.innerHTML += `<div class="form-group"><label>${field.label}</label><select id="field_${field.key}">${buildSelectOptions(departments, value)}</select></div>`;
+                } else {
+                    fieldsContainer.innerHTML += `<div class="form-group"><label>${field.label}</label><input type="text" id="field_${field.key}" value="${value}" required></div>`;
+                }
+            });
+            currentModalCallback = () => {
+                const oldItem = JSON.parse(JSON.stringify(item));
+                currentSchema.fields.forEach(field => {
+                    const newVal = document.getElementById(`field_${field.key}`).value;
+                    const oldVal = oldItem[field.key] || '—';
+                    if (oldVal != newVal) {
+                        const name = item.name || item.user || 'Без названия';
+                        const label = field.label || field.key;
+                        addAudit(name, 'Update', label, oldVal, newVal, 'System');
+                    }
+                    item[field.key] = field.key.includes('departmentId') ? parseInt(newVal) : newVal;
+                });
+                refreshAll();
+            };
+            document.getElementById('modalOverlay').style.display = 'flex';
+        }
+
+        function deleteItem(type, id) {
+            if (confirm('Удалить запись?')) {
+                const store = getStore(type);
+                const item = store[id];
+                const name = item?.name || item?.user || 'Без названия';
+                addAudit(name, 'Delete', 'Все поля', item?.name || item?.user || '—', 'Удалено', 'System');
+                delete store[id];
+                refreshAll();
+                if (document.getElementById('detailPage').style.display === 'block') goBack();
+            }
+        }
+
+        function openAddModalCluster() {
+            currentEditType = 'cluster';
+            currentEditId = null;
+            document.getElementById('modalTitle').innerText = '➕ Добавить кластер';
+            document.getElementById('formFieldsContainer').innerHTML = `
+                <div class="form-group"><label>Название</label><input type="text" id="field_name" required></div>
+                <div class="form-group"><label>Тип</label><input type="text" id="field_type" required></div>
+                <div class="form-group"><label>Окружение</label><input type="text" id="field_environment" required></div>
+                <div class="form-group"><label>Департамент</label><select id="field_departmentId">${buildSelectOptions(departments, '')}</select></div>
+                <div class="form-group"><label>Описание</label><input type="text" id="field_description"></div>
+            `;
+            currentModalCallback = () => {
+                const newId = getNextId(clusters);
+                const name = document.getElementById('field_name').value;
+                clusters[newId] = {
+                    id: newId,
+                    name: name,
+                    type: document.getElementById('field_type').value,
+                    environment: document.getElementById('field_environment').value,
+                    departmentId: parseInt(document.getElementById('field_departmentId').value),
+                    description: document.getElementById('field_description').value || ''
+                };
+                addAudit(name, 'Create', 'Все поля', '—', 'Создано', 'System');
+                renderClusters();
+                renderNodes();
+                refreshAll();
+            };
+            document.getElementById('modalOverlay').style.display = 'flex';
+        }
+
+        function openEditModalCluster(id) {
+            const cluster = clusters[id];
+            if (!cluster) return;
+            currentEditType = 'cluster';
+            currentEditId = id;
+            document.getElementById('modalTitle').innerText = '✏️ Редактировать кластер';
+            document.getElementById('formFieldsContainer').innerHTML = `
+                <div class="form-group"><label>Название</label><input type="text" id="field_name" value="${cluster.name}" required></div>
+                <div class="form-group"><label>Тип</label><input type="text" id="field_type" value="${cluster.type}" required></div>
+                <div class="form-group"><label>Окружение</label><input type="text" id="field_environment" value="${cluster.environment}" required></div>
+                <div class="form-group"><label>Департамент</label><select id="field_departmentId">${buildSelectOptions(departments, cluster.departmentId)}</select></div>
+                <div class="form-group"><label>Описание</label><input type="text" id="field_description" value="${cluster.description || ''}"></div>
+            `;
+            currentModalCallback = () => {
+                const oldName = cluster.name;
+                const newName = document.getElementById('field_name').value;
+                if (oldName !== newName) addAudit(oldName, 'Update', 'Название', oldName, newName, 'System');
+                clusters[id] = {
+                    ...cluster,
+                    name: newName,
+                    type: document.getElementById('field_type').value,
+                    environment: document.getElementById('field_environment').value,
+                    departmentId: parseInt(document.getElementById('field_departmentId').value),
+                    description: document.getElementById('field_description').value || ''
+                };
+                renderClusters();
+                renderNodes();
+                refreshAll();
+            };
+            document.getElementById('modalOverlay').style.display = 'flex';
+        }
+
+        function deleteCluster(id) {
+            if (confirm('Удалить кластер?')) {
+                const cluster = clusters[id];
+                addAudit(cluster.name, 'Delete', 'Все поля', cluster.name, 'Удалено', 'System');
+                delete clusters[id];
+                renderClusters();
+                renderNodes();
+                refreshAll();
+            }
+        }
+
+        function openAddModalNode() {
+            currentEditType = 'node';
+            currentEditId = null;
+            const clusterOptions = Object.values(clusters).map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            document.getElementById('modalTitle').innerText = '➕ Добавить ноду';
+            document.getElementById('formFieldsContainer').innerHTML = `
+                <div class="form-group"><label>Кластер</label><select id="field_clusterId">${clusterOptions}</select></div>
+                <div class="form-group"><label>Имя ноды</label><input type="text" id="field_name" required></div>
+                <div class="form-group"><label>Внутренний IP</label><input type="text" id="field_internalIp" required></div>
+                <div class="form-group"><label>Внешний IP</label><input type="text" id="field_externalIp"></div>
+                <div class="form-group"><label>Порт</label><input type="number" id="field_port" required></div>
+                <div class="form-group"><label>Роль</label><select id="field_role"><option value="leader">leader</option><option value="replica">replica</option><option value="master">master</option><option value="controller">controller</option></select></div>
+                <div class="form-group"><label>Статус</label><select id="field_status"><option value="online">online</option><option value="offline">offline</option><option value="syncing">syncing</option></select></div>
+                <div class="form-group"><label>CPU ядра</label><input type="number" id="field_cpuCores"></div>
+                <div class="form-group"><label>RAM ГБ</label><input type="number" id="field_ramGb"></div>
+                <div class="form-group"><label>Диск ГБ</label><input type="number" id="field_diskGb"></div>
+                <div class="form-group"><label>Департамент</label><select id="field_departmentId">${buildSelectOptions(departments, '')}</select></div>
+            `;
+            currentModalCallback = () => {
+                const newId = getNextId(nodes);
+                const name = document.getElementById('field_name').value;
+                nodes[newId] = {
+                    id: newId,
+                    clusterId: parseInt(document.getElementById('field_clusterId').value),
+                    name: name,
+                    internalIp: document.getElementById('field_internalIp').value,
+                    externalIp: document.getElementById('field_externalIp').value || null,
+                    port: parseInt(document.getElementById('field_port').value),
+                    role: document.getElementById('field_role').value,
+                    status: document.getElementById('field_status').value,
+                    cpuCores: parseInt(document.getElementById('field_cpuCores').value) || 0,
+                    ramGb: parseInt(document.getElementById('field_ramGb').value) || 0,
+                    diskGb: parseInt(document.getElementById('field_diskGb').value) || 0,
+                    departmentId: parseInt(document.getElementById('field_departmentId').value)
+                };
+                addAudit(name, 'Create', 'Все поля', '—', 'Создано', 'System');
+                renderNodes();
+                refreshAll();
+            };
+            document.getElementById('modalOverlay').style.display = 'flex';
+        }
+
+        function openEditModalNode(id) {
+            const node = nodes[id];
+            if (!node) return;
+            currentEditType = 'node';
+            currentEditId = id;
+            const clusterOptions = Object.values(clusters).map(c => `<option value="${c.id}" ${c.id === node.clusterId ? 'selected' : ''}>${c.name}</option>`).join('');
+            document.getElementById('modalTitle').innerText = '✏️ Редактировать ноду';
+            document.getElementById('formFieldsContainer').innerHTML = `
+                <div class="form-group"><label>Кластер</label><select id="field_clusterId">${clusterOptions}</select></div>
+                <div class="form-group"><label>Имя ноды</label><input type="text" id="field_name" value="${node.name}" required></div>
+                <div class="form-group"><label>Внутренний IP</label><input type="text" id="field_internalIp" value="${node.internalIp}" required></div>
+                <div class="form-group"><label>Внешний IP</label><input type="text" id="field_externalIp" value="${node.externalIp || ''}"></div>
+                <div class="form-group"><label>Порт</label><input type="number" id="field_port" value="${node.port}" required></div>
+                <div class="form-group"><label>Роль</label><select id="field_role"><option value="leader" ${node.role === 'leader' ? 'selected' : ''}>leader</option><option value="replica" ${node.role === 'replica' ? 'selected' : ''}>replica</option><option value="master" ${node.role === 'master' ? 'selected' : ''}>master</option><option value="controller" ${node.role === 'controller' ? 'selected' : ''}>controller</option></select></div>
+                <div class="form-group"><label>Статус</label><select id="field_status"><option value="online" ${node.status === 'online' ? 'selected' : ''}>online</option><option value="offline" ${node.status === 'offline' ? 'selected' : ''}>offline</option><option value="syncing" ${node.status === 'syncing' ? 'selected' : ''}>syncing</option></select></div>
+                <div class="form-group"><label>CPU ядра</label><input type="number" id="field_cpuCores" value="${node.cpuCores}"></div>
+                <div class="form-group"><label>RAM ГБ</label><input type="number" id="field_ramGb" value="${node.ramGb}"></div>
+                <div class="form-group"><label>Диск ГБ</label><input type="number" id="field_diskGb" value="${node.diskGb}"></div>
+                <div class="form-group"><label>Департамент</label><select id="field_departmentId">${buildSelectOptions(departments, node.departmentId)}</select></div>
+            `;
+            currentModalCallback = () => {
+                const oldName = node.name;
+                const newName = document.getElementById('field_name').value;
+                if (oldName !== newName) addAudit(oldName, 'Update', 'Имя ноды', oldName, newName, 'System');
+                nodes[id] = {
+                    ...node,
+                    clusterId: parseInt(document.getElementById('field_clusterId').value),
+                    name: newName,
+                    internalIp: document.getElementById('field_internalIp').value,
+                    externalIp: document.getElementById('field_externalIp').value || null,
+                    port: parseInt(document.getElementById('field_port').value),
+                    role: document.getElementById('field_role').value,
+                    status: document.getElementById('field_status').value,
+                    cpuCores: parseInt(document.getElementById('field_cpuCores').value) || 0,
+                    ramGb: parseInt(document.getElementById('field_ramGb').value) || 0,
+                    diskGb: parseInt(document.getElementById('field_diskGb').value) || 0,
+                    departmentId: parseInt(document.getElementById('field_departmentId').value)
+                };
+                renderNodes();
+                refreshAll();
+            };
+            document.getElementById('modalOverlay').style.display = 'flex';
+        }
+
+        function deleteNode(id) {
+            if (confirm('Удалить ноду?')) {
+                const node = nodes[id];
+                addAudit(node.name, 'Delete', 'Все поля', node.name, 'Удалено', 'System');
+                delete nodes[id];
+                renderNodes();
+                refreshAll();
+            }
+        }
+
+        function openAddModalAccess() {
+            currentEditType = 'access';
+            currentEditId = null;
+            const serviceOptions = Object.values(services).map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+            const nodeOptions = Object.values(nodes).map(n => `<option value="${n.id}">${n.name} (${n.internalIp})</option>`).join('');
+            document.getElementById('modalTitle').innerText = '➕ Добавить доступ';
+            document.getElementById('formFieldsContainer').innerHTML = `
+                <div class="form-group"><label>Сервис</label><select id="field_serviceId">${serviceOptions}</select></div>
+                <div class="form-group"><label>Нода</label><select id="field_nodeId">${nodeOptions}</select></div>
+                <div class="form-group"><label>Тип доступа</label><select id="field_accessType"><option value="read">read</option><option value="write">write</option><option value="read_write">read_write</option><option value="admin">admin</option></select></div>
+                <div class="form-group"><label>Департамент</label><select id="field_departmentId">${buildSelectOptions(departments, '')}</select></div>
+            `;
+            currentModalCallback = () => {
+                const newId = getNextId(serviceAccesses);
+                const service = services[parseInt(document.getElementById('field_serviceId').value)];
+                const node = nodes[parseInt(document.getElementById('field_nodeId').value)];
+                serviceAccesses[newId] = {
+                    id: newId,
+                    serviceId: parseInt(document.getElementById('field_serviceId').value),
+                    nodeId: parseInt(document.getElementById('field_nodeId').value),
+                    accessType: document.getElementById('field_accessType').value,
+                    departmentId: parseInt(document.getElementById('field_departmentId').value)
+                };
+                addAudit(`${service?.name || 'Сервис'} → ${node?.name || 'Нода'}`, 'Create', 'Доступ', '—', `${document.getElementById('field_accessType').value}`, 'System');
+                renderAccesses();
+                refreshAll();
+            };
+            document.getElementById('modalOverlay').style.display = 'flex';
+        }
+
+        function openEditModalAccess(id) {
+            const access = serviceAccesses[id];
+            if (!access) return;
+            currentEditType = 'access';
+            currentEditId = id;
+            const serviceOptions = Object.values(services).map(s => `<option value="${s.id}" ${s.id === access.serviceId ? 'selected' : ''}>${s.name}</option>`).join('');
+            const nodeOptions = Object.values(nodes).map(n => `<option value="${n.id}" ${n.id === access.nodeId ? 'selected' : ''}>${n.name} (${n.internalIp})</option>`).join('');
+            document.getElementById('modalTitle').innerText = '✏️ Редактировать доступ';
+            document.getElementById('formFieldsContainer').innerHTML = `
+                <div class="form-group"><label>Сервис</label><select id="field_serviceId">${serviceOptions}</select></div>
+                <div class="form-group"><label>Нода</label><select id="field_nodeId">${nodeOptions}</select></div>
+                <div class="form-group"><label>Тип доступа</label><select id="field_accessType"><option value="read" ${access.accessType === 'read' ? 'selected' : ''}>read</option><option value="write" ${access.accessType === 'write' ? 'selected' : ''}>write</option><option value="read_write" ${access.accessType === 'read_write' ? 'selected' : ''}>read_write</option><option value="admin" ${access.accessType === 'admin' ? 'selected' : ''}>admin</option></select></div>
+                <div class="form-group"><label>Департамент</label><select id="field_departmentId">${buildSelectOptions(departments, access.departmentId)}</select></div>
+            `;
+            currentModalCallback = () => {
+                const oldAccess = access.accessType;
+                const newAccess = document.getElementById('field_accessType').value;
+                if (oldAccess !== newAccess) {
+                    const service = services[access.serviceId];
+                    const node = nodes[access.nodeId];
+                    addAudit(`${service?.name || 'Сервис'} → ${node?.name || 'Нода'}`, 'Update', 'Тип доступа', oldAccess, newAccess, 'System');
+                }
+                serviceAccesses[id] = {
+                    ...access,
+                    serviceId: parseInt(document.getElementById('field_serviceId').value),
+                    nodeId: parseInt(document.getElementById('field_nodeId').value),
+                    accessType: newAccess,
+                    departmentId: parseInt(document.getElementById('field_departmentId').value)
+                };
+                renderAccesses();
+                refreshAll();
+            };
+            document.getElementById('modalOverlay').style.display = 'flex';
+        }
+
+        function deleteAccess(id) {
+            if (confirm('Удалить доступ?')) {
+                const access = serviceAccesses[id];
+                const service = services[access.serviceId];
+                const node = nodes[access.nodeId];
+                addAudit(`${service?.name || 'Сервис'} → ${node?.name || 'Нода'}`, 'Delete', 'Доступ', access.accessType, 'Удалено', 'System');
+                delete serviceAccesses[id];
+                renderAccesses();
+                refreshAll();
+            }
+        }
+
+        function openAddModalDepartment() {
+            currentEditType = 'departments';
+            currentEditId = null;
+            document.getElementById('modalTitle').innerText = '➕ Добавить департамент';
+            document.getElementById('formFieldsContainer').innerHTML = `
+                <div class="form-group"><label>Название департамента</label><input type="text" id="field_name" required></div>
+                <div class="form-group"><label>Тип</label><input type="text" id="field_type" required></div>
+                <div class="form-group"><label>Руководитель</label><input type="text" id="field_head" required></div>
+                <div class="form-group"><label>Email</label><input type="email" id="field_email" required></div>
+                <div class="form-group"><label>Телефон</label><input type="text" id="field_phone" required></div>
+                <div class="form-group"><label>Описание</label><input type="text" id="field_description"></div>
+            `;
+            currentModalCallback = () => {
+                const newId = getNextId(departments);
+                const name = document.getElementById('field_name').value;
+                departments[newId] = {
+                    id: newId,
+                    name: name,
+                    type: document.getElementById('field_type').value,
+                    head: document.getElementById('field_head').value,
+                    email: document.getElementById('field_email').value,
+                    phone: document.getElementById('field_phone').value,
+                    description: document.getElementById('field_description').value || ''
+                };
+                addAudit(name, 'Create', 'Все поля', '—', 'Создано', 'System');
+                renderDepartments();
+                refreshAll();
+            };
+            document.getElementById('modalOverlay').style.display = 'flex';
+        }
+
+        function openEditModalDepartment(id) {
+            const dept = departments[id];
+            if (!dept) return;
+            currentEditType = 'departments';
+            currentEditId = id;
+            document.getElementById('modalTitle').innerText = '✏️ Редактировать департамент';
+            document.getElementById('formFieldsContainer').innerHTML = `
+                <div class="form-group"><label>Название департамента</label><input type="text" id="field_name" value="${dept.name}" required></div>
+                <div class="form-group"><label>Тип</label><input type="text" id="field_type" value="${dept.type}" required></div>
+                <div class="form-group"><label>Руководитель</label><input type="text" id="field_head" value="${dept.head}" required></div>
+                <div class="form-group"><label>Email</label><input type="email" id="field_email" value="${dept.email}" required></div>
+                <div class="form-group"><label>Телефон</label><input type="text" id="field_phone" value="${dept.phone}" required></div>
+                <div class="form-group"><label>Описание</label><input type="text" id="field_description" value="${dept.description || ''}"></div>
+            `;
+            currentModalCallback = () => {
+                const oldName = dept.name;
+                const newName = document.getElementById('field_name').value;
+                if (oldName !== newName) addAudit(oldName, 'Update', 'Название', oldName, newName, 'System');
+                departments[id] = {
+                    ...dept,
+                    name: newName,
+                    type: document.getElementById('field_type').value,
+                    head: document.getElementById('field_head').value,
+                    email: document.getElementById('field_email').value,
+                    phone: document.getElementById('field_phone').value,
+                    description: document.getElementById('field_description').value || ''
+                };
+                renderDepartments();
+                refreshAll();
+            };
+            document.getElementById('modalOverlay').style.display = 'flex';
+        }
+
+        function deleteDepartment(id) {
+            if (confirm('Удалить департамент?')) {
+                const dept = departments[id];
+                addAudit(dept.name, 'Delete', 'Все поля', dept.name, 'Удалено', 'System');
+                delete departments[id];
+                renderDepartments();
+                refreshAll();
+            }
+        }
+
+        function renderDetailPage(type, id) {
+            let html = '';
+            if (type === 'device') {
+                const device = devices[id];
+                if (!device) { goBack(); return; }
+                const servicesOnDevice = (deviceServices[id] || []).map(sid => services[sid]);
+                const networkId = deviceNetwork[id];
+                const network = networkId ? { id: networkId, name: networkId === 1 ? 'Production' : networkId === 2 ? 'Management' : networkId === 3 ? 'Storage' : 'Cache' } : null;
+                html = `
+                    <div class="detail-header"><div><h2>🖥️ ${device.name}</h2><p>Детальная информация об устройстве</p></div>
+                    <div><button class="btn-edit" onclick="openEditFlow('devices', ${device.id})">✏️ Редактировать</button><button class="btn-delete" onclick="deleteItem('devices', ${device.id})">🗑️ Удалить</button></div></div>
+                    <div class="detail-body">
+                        <div class="detail-section"><h3>Основная информация</h3><div class="detail-grid">`;
+                const fields = schema.devices.fields;
+                fields.forEach(f => {
+                    const val = device[f.key] !== undefined && device[f.key] !== null ? device[f.key] : '—';
+                    const displayVal = f.key === 'departmentId' ? getDepartmentName(val) : val;
+                    html += `<div class="detail-item"><div class="detail-label">${f.label}</div><div class="detail-value">${displayVal}</div><div class="detail-desc">${getDescription(f.descKey)}</div></div>`;
+                });
+                html += `</div></div>`;
+                if (servicesOnDevice.length > 0) {
+                    html += `<div class="detail-section"><h3>🚀 Запущенные сервисы</h3><div class="related-list">`;
+                    servicesOnDevice.forEach(s => { if(s) html += `<span class="related-link" onclick="navigateToDetail('service', ${s.id})">⚙️ ${s.name}</span>`; });
+                    html += `</div></div>`;
+                }
+                if (network) {
+                    html += `<div class="detail-section"><h3>🌐 Сеть</h3><div class="related-list"><span class="related-link" onclick="navigateToDetail('network', ${network.id})">🌐 ${network.name}</span></div></div>`;
+                }
+                html += `</div>`;
+            } else if (type === 'service') {
+                const service = services[id];
+                if (!service) { goBack(); return; }
+                const devicesList = (serviceDevices[id] || []).map(did => devices[did]);
+                html = `<div class="detail-header"><div><h2>⚙️ ${service.name}</h2><p>Детальная информация о сервисе</p></div>
+                    <div><button class="btn-edit" onclick="openEditFlow('services', ${service.id})">✏️ Редактировать</button><button class="btn-delete" onclick="deleteItem('services', ${service.id})">🗑️ Удалить</button></div></div>
+                    <div class="detail-body"><div class="detail-section"><h3>Основная информация</h3><div class="detail-grid">`;
+                const fields = schema.services.fields;
+                fields.forEach(f => {
+                    const val = service[f.key] !== undefined && service[f.key] !== null ? service[f.key] : '—';
+                    const displayVal = f.key === 'departmentId' ? getDepartmentName(val) : val;
+                    html += `<div class="detail-item"><div class="detail-label">${f.label}</div><div class="detail-value">${displayVal}</div><div class="detail-desc">${getDescription(f.descKey)}</div></div>`;
+                });
+                html += `</div></div>`;
+                if (devicesList.length > 0) {
+                    html += `<div class="detail-section"><h3>🖥️ Запущен на устройствах</h3><div class="related-list">`;
+                    devicesList.forEach(d => { if(d) html += `<span class="related-link" onclick="navigateToDetail('device', ${d.id})">🖥️ ${d.name}</span>`; });
+                    html += `</div></div>`;
+                }
+                html += `</div>`;
+            } else if (type === 'cluster') {
+                const cluster = clusters[id];
+                if (!cluster) { goBack(); return; }
+                html = `<div class="detail-header"><div><h2>🏢 ${cluster.name}</h2><p>Детальная информация о кластере</p></div>
+                    <div><button class="btn-edit" onclick="openEditModalCluster(${cluster.id})">✏️ Редактировать</button><button class="btn-delete" onclick="deleteCluster(${cluster.id})">🗑️ Удалить</button></div></div>
+                    <div class="detail-body"><div class="detail-grid">
+                        <div class="detail-item"><div class="detail-label">Название</div><div class="detail-value">${cluster.name}</div><div class="detail-desc">${getDescription('clusterName')}</div></div>
+                        <div class="detail-item"><div class="detail-label">Тип</div><div class="detail-value">${cluster.type}</div><div class="detail-desc">${getDescription('clusterType')}</div></div>
+                        <div class="detail-item"><div class="detail-label">Окружение</div><div class="detail-value">${cluster.environment}</div><div class="detail-desc">${getDescription('environment')}</div></div>
+                        <div class="detail-item"><div class="detail-label">Департамент</div><div class="detail-value"><span class="badge-department">${getDepartmentName(cluster.departmentId)}</span></div><div class="detail-desc">${getDescription('department')}</div></div>
+                        <div class="detail-item"><div class="detail-label">Описание</div><div class="detail-value">${cluster.description}</div><div class="detail-desc">${getDescription('clusterDescription')}</div></div>
+                    </div></div>`;
+            } else if (type === 'node') {
+                const node = nodes[id];
+                if (!node) { goBack(); return; }
+                const cluster = clusters[node.clusterId];
+                const statusClass = node.status === 'online' ? 'badge-success' : (node.status === 'offline' ? 'badge-danger' : 'badge-warning');
+                html = `<div class="detail-header"><div><h2>🖧 ${node.name}</h2><p>Детальная информация о ноде</p></div>
+                    <div><button class="btn-edit" onclick="openEditModalNode(${node.id})">✏️ Редактировать</button><button class="btn-delete" onclick="deleteNode(${node.id})">🗑️ Удалить</button></div></div>
+                    <div class="detail-body"><div class="detail-section"><h3>Основная информация</h3><div class="detail-grid">
+                        <div class="detail-item"><div class="detail-label">Имя ноды</div><div class="detail-value">${node.name}</div><div class="detail-desc">${getDescription('nodeName')}</div></div>
+                        <div class="detail-item"><div class="detail-label">Кластер</div><div class="detail-value">${cluster ? cluster.name : '—'}</div><div class="detail-desc">${getDescription('clusterName')}</div></div>
+                        <div class="detail-item"><div class="detail-label">Внутренний IP</div><div class="detail-value">${node.internalIp}</div><div class="detail-desc">${getDescription('internalIp')}</div></div>
+                        <div class="detail-item"><div class="detail-label">Внешний IP</div><div class="detail-value">${node.externalIp || '—'}</div><div class="detail-desc">${getDescription('externalIp')}</div></div>
+                        <div class="detail-item"><div class="detail-label">Порт</div><div class="detail-value">${node.port}</div><div class="detail-desc">${getDescription('nodePort')}</div></div>
+                        <div class="detail-item"><div class="detail-label">Роль</div><div class="detail-value">${node.role}</div><div class="detail-desc">${getDescription('role')}</div></div>
+                        <div class="detail-item"><div class="detail-label">Статус</div><div class="detail-value"><span class="${statusClass}">${node.status}</span></div><div class="detail-desc">${getDescription('nodeStatus')}</div></div>
+                        <div class="detail-item"><div class="detail-label">CPU ядра</div><div class="detail-value">${node.cpuCores}</div><div class="detail-desc">${getDescription('cpuCores')}</div></div>
+                        <div class="detail-item"><div class="detail-label">RAM ГБ</div><div class="detail-value">${node.ramGb}</div><div class="detail-desc">${getDescription('ramGb')}</div></div>
+                        <div class="detail-item"><div class="detail-label">Диск ГБ</div><div class="detail-value">${node.diskGb}</div><div class="detail-desc">${getDescription('diskGb')}</div></div>
+                        <div class="detail-item"><div class="detail-label">Департамент</div><div class="detail-value"><span class="badge-department">${getDepartmentName(node.departmentId)}</span></div><div class="detail-desc">${getDescription('department')}</div></div>
+                    </div></div>
+                `;
+                if (cluster) {
+                    html += `<div class="detail-section"><h3>🔗 Связи</h3><div class="related-list">
+                        <button class="btn-add" style="background: rgba(0,210,255,0.2); border-color:#00d2ff;" onclick="navigateToDetail('cluster', ${cluster.id})">🏢 Перейти к кластеру: ${cluster.name}</button>
+                    </div></div>`;
+                }
+                html += `</div>`;
+            } else if (type === 'access') {
+                const access = serviceAccesses[id];
+                if (!access) { goBack(); return; }
+                const service = services[access.serviceId];
+                const node = nodes[access.nodeId];
+                html = `<div class="detail-header"><div><h2>🔗 Доступ: ${service ? service.name : '—'} → ${node ? node.name : '—'}</h2><p>Детальная информация о доступе</p></div>
+                    <div><button class="btn-edit" onclick="openEditModalAccess(${access.id})">✏️ Редактировать</button><button class="btn-delete" onclick="deleteAccess(${access.id})">🗑️ Удалить</button></div></div>
+                    <div class="detail-body"><div class="detail-grid">
+                        <div class="detail-item"><div class="detail-label">Сервис</div><div class="detail-value">${service ? service.name : '—'} (${service ? service.type : '—'})</div><div class="detail-desc">${getDescription('serviceName')}</div></div>
+                        <div class="detail-item"><div class="detail-label">Нода</div><div class="detail-value">${node ? node.name : '—'} (${node ? node.internalIp : '—'})</div><div class="detail-desc">${getDescription('nodeName')}</div></div>
+                        <div class="detail-item"><div class="detail-label">Тип доступа</div><div class="detail-value"><span class="badge">${access.accessType}</span></div><div class="detail-desc">${getDescription('accessType')}</div></div>
+                        <div class="detail-item"><div class="detail-label">Департамент</div><div class="detail-value"><span class="badge-department">${getDepartmentName(access.departmentId)}</span></div><div class="detail-desc">${getDescription('department')}</div></div>
+                    </div></div>`;
+            } else if (type === 'department') {
+                const dept = departments[id];
+                if (!dept) { goBack(); return; }
+                html = `<div class="detail-header"><div><h2>🏛️ ${dept.name}</h2><p>Детальная информация о департаменте</p></div>
+                    <div><button class="btn-edit" onclick="openEditModalDepartment(${dept.id})">✏️ Редактировать</button><button class="btn-delete" onclick="deleteDepartment(${dept.id})">🗑️ Удалить</button></div></div>
+                    <div class="detail-body"><div class="detail-grid">`;
+                const fields = schema.departments.fields;
+                fields.forEach(f => {
+                    const val = dept[f.key] !== undefined && dept[f.key] !== null ? dept[f.key] : '—';
+                    html += `<div class="detail-item"><div class="detail-label">${f.label}</div><div class="detail-value">${val}</div><div class="detail-desc">${getDescription(f.descKey)}</div></div>`;
+                });
+                html += `</div></div>`;
+            } else if (type === 'credential') {
+                const cred = credentials[id];
+                if (!cred) { goBack(); return; }
+                html = `<div class="detail-header"><div><h2>🔐 ${cred.user}</h2><p>Детальная информация об учётных данных</p></div>
+                    <div><button class="btn-edit" onclick="openEditFlow('credentials', ${cred.id})">✏️ Редактировать</button><button class="btn-delete" onclick="deleteItem('credentials', ${cred.id})">🗑️ Удалить</button></div></div>
+                    <div class="detail-body"><div class="detail-grid">`;
+                const fields = schema.credentials.fields;
+                fields.forEach(f => {
+                    const val = cred[f.key] !== undefined && cred[f.key] !== null ? cred[f.key] : '—';
+                    const displayVal = f.key === 'departmentId' ? getDepartmentName(val) : val;
+                    html += `<div class="detail-item"><div class="detail-label">${f.label}</div><div class="detail-value">${displayVal}</div><div class="detail-desc">${getDescription(f.descKey)}</div></div>`;
+                });
+                html += `</div></div>`;
+            } else if (type === 'network') {
+                const net = networks[id];
+                if (!net) { goBack(); return; }
+                html = `<div class="detail-header"><div><h2>🌐 ${net.name}</h2><p>Детальная информация о сети</p></div>
+                    <div><button class="btn-edit" onclick="openEditFlow('networks', ${net.id})">✏️ Редактировать</button><button class="btn-delete" onclick="deleteItem('networks', ${net.id})">🗑️ Удалить</button></div></div>
+                    <div class="detail-body"><div class="detail-grid">`;
+                const fields = schema.networks.fields;
+                fields.forEach(f => {
+                    const val = net[f.key] !== undefined && net[f.key] !== null ? net[f.key] : '—';
+                    const displayVal = f.key === 'departmentId' ? getDepartmentName(val) : val;
+                    html += `<div class="detail-item"><div class="detail-label">${f.label}</div><div class="detail-value">${displayVal}</div><div class="detail-desc">${getDescription(f.descKey)}</div></div>`;
+                });
+                html += `</div></div>`;
+            } else if (type === 'audit') {
+                const audit = audits[id];
+                if (!audit) { goBack(); return; }
+                html = `<div class="detail-header"><div><h2>📝 Запись аудита #${audit.id}</h2><p>История изменения</p></div></div>
+                    <div class="detail-body"><div class="detail-grid">
+                        <div class="detail-item"><div class="detail-label">Актив</div><div class="detail-value">${audit.asset}</div><div class="detail-desc">${getDescription('asset')}</div></div>
+                        <div class="detail-item"><div class="detail-label">Действие</div><div class="detail-value">${audit.action}</div><div class="detail-desc">${getDescription('action')}</div></div>
+                        <div class="detail-item"><div class="detail-label">Поле</div><div class="detail-value">${audit.field}</div><div class="detail-desc">${getDescription('field')}</div></div>
+                        <div class="detail-item"><div class="detail-label">Старое значение</div><div class="detail-value">${audit.oldValue}</div><div class="detail-desc">${getDescription('oldValue')}</div></div>
+                        <div class="detail-item"><div class="detail-label">Новое значение</div><div class="detail-value">${audit.newValue}</div><div class="detail-desc">${getDescription('newValue')}</div></div>
+                        <div class="detail-item"><div class="detail-label">Кто изменил</div><div class="detail-value">${audit.user}</div><div class="detail-desc">${getDescription('user')}</div></div>
+                        <div class="detail-item"><div class="detail-label">Дата</div><div class="detail-value">${audit.date}</div><div class="detail-desc">${getDescription('date')}</div></div>
+                    </div></div>`;
+            }
+            document.getElementById('detailContent').innerHTML = html;
+            document.getElementById('listPage').style.display = 'none';
+            document.getElementById('detailPage').style.display = 'block';
+            window.scrollTo({ top: 0 });
+        }
+
+        function navigateToDetail(type, id) {
+            renderDetailPage(type, id);
+        }
+
+        function goBack() {
+            document.getElementById('detailPage').style.display = 'none';
+            document.getElementById('listPage').style.display = 'block';
+            Object.values(containers).forEach(c => { if (c) c.style.display = 'none'; });
+            if (containers[currentTab]) containers[currentTab].style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').style.display = 'none';
+            currentModalCallback = null;
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            if (currentModalCallback) currentModalCallback();
+            closeModal();
+        }
+
+        const tabs = document.querySelectorAll('.tab-btn');
+        tabs.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabs.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                Object.values(containers).forEach(c => { if (c) c.style.display = 'none'; });
+                const tabName = btn.getAttribute('data-tab');
+                currentTab = tabName;
+                if (containers[tabName]) containers[tabName].style.display = 'block';
+                if (tabName === 'diagram') {
+                    setTimeout(() => { updateDependencyDiagram(); }, 100);
+                }
+            });
+        });
+
+        refreshAll();
+
+        // ============ СХЕМА ЗАВИСИМОСТЕЙ ============
+        function renderDependencies() {
+            const depCount = Object.values(serviceDependencies).reduce((acc, deps) => acc + deps.length, 0);
+            document.getElementById('depServiceCount').textContent = Object.keys(services).length;
+            document.getElementById('depEdgeCount').textContent = depCount;
+        }
+
+        function updateDependencyDiagram() {
+            const container = document.getElementById('depContainer');
+            if (!container) return;
+
+            const levels = buildDependencyLevels();
+            container.innerHTML = '';
+
+            if (levels.length === 0) {
+                container.innerHTML =
+                    '<div style="color:#666;text-align:center;padding:40px;font-size:16px;">Нет сервисов для отображения</div>';
+                return;
+            }
+
+            const outerContainer = document.createElement('div');
+            outerContainer.className = 'dep-outer-container';
+            outerContainer.innerHTML = `<div class="outer-label">🏗️ <span class="sub">СХЕМА ЗАВИСИМОСТЕЙ</span></div>`;
+
+            const innerContainer = document.createElement('div');
+            innerContainer.className = 'dep-container-vertical';
+
+            levels.forEach((level, levelIndex) => {
+                const row = document.createElement('div');
+                row.className = 'dep-row-vertical';
+
+                const sorted = [...level].sort((a, b) => {
+                    const order = { 'API': 0, 'Frontend': 1, 'Worker': 2, 'Database': 3, 'Cache': 4, 'MessageBroker': 5 };
+                    return (order[services[a]?.type] || 9) -
+                        (order[services[b]?.type] || 9);
+                });
+
+                const groups = {};
+                sorted.forEach(serviceId => {
+                    const service = services[serviceId];
+                    if (service) {
+                        const type = service.type || 'other';
+                        if (!groups[type]) groups[type] = [];
+                        groups[type].push(serviceId);
+                    }
+                });
+
+                Object.keys(groups).forEach(groupType => {
+                    const groupDiv = document.createElement('div');
+                    groupDiv.className = 'dep-inner-group';
+                    groupDiv.innerHTML = `<span class="group-label">${groupType}</span>`;
+
+                    groups[groupType].forEach(serviceId => {
+                        const service = services[serviceId];
+                        if (!service) return;
+
+                        // Находим связанные ноды
+                        const serviceAccessesList = Object.values(serviceAccesses).filter(a => a.serviceId === serviceId);
+                        const nodeInfo = serviceAccessesList.map(a => {
+                            const node = nodes[a.nodeId];
+                            return node || null;
+                        }).filter(n => n !== null);
+
+                        const ips = nodeInfo.map(n => n.internalIp).filter(ip => ip);
+                        const ports = nodeInfo.map(n => n.port).filter(p => p);
+                        const cpuCores = nodeInfo.map(n => n.cpuCores).filter(c => c);
+                        const ramGb = nodeInfo.map(n => n.ramGb).filter(r => r);
+
+                        const card = document.createElement('div');
+                        const typeClass = getTypeClass(service.type);
+                        const statusClass = service.status.toLowerCase();
+
+                        let icon = '⚙️';
+                        if (service.type === 'API') icon = '🔐';
+                        else if (service.type === 'Frontend') icon = '🌐';
+                        else if (service.type === 'Worker') icon = '⚡';
+                        else if (service.type === 'Database') icon = '🗄️';
+                        else if (service.type === 'Cache') icon = '🚀';
+                        else if (service.type === 'MessageBroker') icon = '📨';
+
+                        let infoHTML = '';
+                        if (ips.length > 0) {
+                            infoHTML += `<div class="card-ip">🌐 ${ips.join(', ')}</div>`;
+                        }
+                        if (ports.length > 0) {
+                            infoHTML += `<div class="card-port">🔌 Порт: ${ports.join(', ')}</div>`;
+                        }
+                        if (cpuCores.length > 0) {
+                            infoHTML += `<div class="card-resources">💻 CPU: ${cpuCores[0]} ядер</div>`;
+                        }
+                        if (ramGb.length > 0) {
+                            infoHTML += `<div class="card-resources">🧠 RAM: ${ramGb[0]} ГБ</div>`;
+                        }
+                        if (service.techStack) {
+                            infoHTML += `<div class="card-tech">📦 ${service.techStack}</div>`;
+                        }
+
+                        card.className = `dep-card-vertical type-${typeClass}`;
+                        card.innerHTML = `
+                            <span class="card-icon">${icon}</span>
+                            <span class="card-name">${service.name}</span>
+                            <span class="card-type">${service.type}</span>
+                            <span class="card-status ${statusClass}">${service.status}</span>
+                            ${infoHTML}
+                        `;
+                        card.onclick = () => navigateToDetail('service', service.id);
+                        card.title = `${service.name}\nТип: ${service.type}\nВерсия: ${service.version}\nСтатус: ${service.status}\nIP: ${ips.join(', ') || '—'}\nПорт: ${ports.join(', ') || service.port || '—'}\nКлик для деталей`;
+
+                        groupDiv.appendChild(card);
+                    });
+
+                    row.appendChild(groupDiv);
+                });
+
+                innerContainer.appendChild(row);
+
+                if (levelIndex < levels.length - 1) {
+                    const arrow = document.createElement('div');
+                    arrow.className = 'dep-arrow-vertical';
+                    arrow.innerHTML = `
+                        <div class="arrow-down"></div>
+                        <span class="arrow-label">⬇ <span class="highlight">ЗАВИСИТ ОТ</span> ⬇</span>
+                    `;
+                    innerContainer.appendChild(arrow);
+                }
+            });
+
+            outerContainer.appendChild(innerContainer);
+            container.appendChild(outerContainer);
+
+            renderDependencies();
+        }
+
+        function getTypeClass(type) {
+            const map = {
+                'API': 'api',
+                'Frontend': 'frontend',
+                'Worker': 'worker',
+                'Database': 'database',
+                'Cache': 'cache',
+                'MessageBroker': 'messagebroker'
+            };
+            return map[type] || 'api';
+        }
+
+        function buildDependencyLevels() {
+            const serviceIds = Object.keys(services).map(Number);
+            const levels = [];
+
+            function getDependencies(id) {
+                return serviceDependencies[id] || [];
+            }
+
+            function getLevel(id, currentLevel) {
+                const deps = getDependencies(id);
+                if (deps.length === 0) return currentLevel;
+
+                let maxLevel = currentLevel;
+                deps.forEach(depId => {
+                    if (services[depId]) {
+                        const depLevel = getLevel(depId, currentLevel + 1);
+                        if (depLevel > maxLevel) maxLevel = depLevel;
+                    }
+                });
+                return maxLevel;
+            }
+
+            const allDeps = new Set();
+            Object.values(serviceDependencies).forEach(deps => {
+                deps.forEach(d => allDeps.add(d));
+            });
+
+            const rootServices = serviceIds.filter(id => !allDeps.has(id));
+            const startNodes = rootServices.length > 0 ? rootServices : serviceIds;
+
+            const levelMap = {};
+            startNodes.forEach(id => {
+                levelMap[id] = getLevel(id, 0);
+            });
+
+            serviceIds.forEach(id => {
+                if (!(id in levelMap)) {
+                    const deps = getDependencies(id);
+                    let minLevel = 0;
+                    deps.forEach(depId => {
+                        if (depId in levelMap) {
+                            if (levelMap[depId] + 1 > minLevel) minLevel = levelMap[depId] + 1;
+                        }
+                    });
+                    levelMap[id] = minLevel;
+                }
+            });
+
+            const maxLevel = Math.max(...Object.values(levelMap));
+            for (let i = 0; i <= maxLevel; i++) {
+                const levelServices = Object.keys(levelMap)
+                    .filter(id => levelMap[id] === i)
+                    .map(Number);
+                if (levelServices.length > 0) {
+                    levels.push(levelServices);
+                }
+            }
+
+            return levels;
+        }
+
+        // ============ КНОПКИ УПРАВЛЕНИЯ ============
+        function diagramSync() {
+            refreshAll();
+            showToast('🔄 Схема обновлена');
+        }
+
+        function diagramAddService() {
+            const name = prompt('Название сервиса:');
+            if (!name) return;
+            const type = prompt('Тип (API/Frontend/Worker/Database/Cache/MessageBroker):', 'API');
+            const version = prompt('Версия:', '1.0.0');
+            const port = prompt('Порт:', '8080');
+            const status = prompt('Статус (Running/Stopped/Degraded):', 'Running');
+            const newId = getNextId(services);
+            services[newId] = {
+                id: newId,
+                name: name,
+                type: type || 'API',
+                version: version || '1.0.0',
+                status: status || 'Running',
+                port: port || '—',
+                techStack: '—',
+                description: '',
+                departmentId: 5
+            };
+            serviceDependencies[newId] = [];
+            refreshAll();
+            showToast('✅ Сервис добавлен');
+        }
+
+        function diagramAddDependency() {
+            const serviceName = prompt('Название сервиса (который зависит):');
+            if (!serviceName) return;
+            const dependsOn = prompt('Название сервиса (от которого зависит):');
+            if (!dependsOn) return;
+
+            const service = Object.values(services).find(s => s.name.toLowerCase() === serviceName.toLowerCase());
+            const depService = Object.values(services).find(s => s.name.toLowerCase() === dependsOn.toLowerCase());
+
+            if (!service) { showToast('❌ Сервис не найден'); return; }
+            if (!depService) { showToast('❌ Зависимый сервис не найден'); return; }
+            if (service.id === depService.id) { showToast('❌ Сервис не может зависеть от себя'); return; }
+
+            if (!serviceDependencies[service.id]) serviceDependencies[service.id] = [];
+            if (serviceDependencies[service.id].includes(depService.id)) {
+                showToast('⚠️ Зависимость уже существует');
+                return;
+            }
+
+            serviceDependencies[service.id].push(depService.id);
+            refreshAll();
+            showToast('✅ Зависимость добавлена');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.remove('show');
+            void toast.offsetWidth;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+    </script>
+</body>
+</html>
